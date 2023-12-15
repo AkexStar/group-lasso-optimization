@@ -1,0 +1,5 @@
+Mosek
+gurobipy
+cvxopt
+cvxpy[CVXOPT,GUROBI,MOSEK]
+matplotlib
