@@ -2,26 +2,32 @@ import contextlib
 import sys
 import os
 import re
+from datetime import datetime
 
 '''
 This is for recording iteration counts and objective values in shared libraries like gurobi and mosek
+以下用于把程序的输出保存到文件，而不是打印到控制台
 '''
 @contextlib.contextmanager
-def capture_output():
+def capture_output(name: str = 'solver_'):
     fd = sys.stdout.fileno()
     def _redir_stdout(to):
         sys.stdout.close()
         os.dup2(to.fileno(), fd)
         sys.stdout = os.fdopen(fd, 'w')
-    ret = {}
+    ret = {}  
     with os.fdopen(os.dup(fd), 'w') as old_stdout:
-        with open('/tmp/solver_output.txt', 'w') as f:
+        if not os.path.exists('/Users/alex/Documents/code/group-lasso-optimization/logs/'):
+            os.makedirs('/Users/alex/Documents/code/group-lasso-optimization/logs/')
+        if os.path.exists('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt'):
+            os.remove('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt')
+        with open('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt', 'w') as f:
             _redir_stdout(f)
         try:
             yield ret
         finally:
             _redir_stdout(old_stdout)
-            with open('/tmp/solver_output.txt') as f:
+            with open('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt') as f:
                 ret['output'] = f.read()
 
 re_iterc_default = re.compile(r'^ *(?P<iterc>\d{1,3})\:? +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE)
