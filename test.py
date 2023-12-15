@@ -2,6 +2,7 @@ import numpy as np
 import time
 from tabulate import tabulate
 import matplotlib.pyplot as plt
+from logger import logger
 
 plot_curve = True
 
@@ -13,13 +14,13 @@ def test_solver(solver, kw):
     time_elapsed = (toc - tic) * 10**(-9)
     err = np.linalg.norm(u - x) / np.linalg.norm(u)
     sparsity = np.sum(np.abs(x) > 1e-5) / x.size
-    print('Time:', time_elapsed)
-    print('Objective:', obj)
-    print('Error:', err)
-    print('Sparsity:', sparsity)
+    # logger.info('Time:', time_elapsed)
+    # logger.info('Objective:', obj)
+    # logger.info('Error:', err)
+    # logger.info('Sparsity:', sparsity)
     if 'iters' in out and plot_curve:
         x, y = zip(*out['iters'])
-        plt.plot(x, y, label=kw)
+        plt.plot(x, y, '*-', label=kw)
     return obj, err, time_elapsed, it, sparsity
 
 if __name__ == '__main__':
@@ -30,7 +31,7 @@ if __name__ == '__main__':
         solvers = {**solvers, **importlib.import_module(name).solvers}
     tab = []
     for kw, solver in solvers.items():
-        print(kw)
+        print('Solver:', kw)
         tab.append([kw, *test_solver(solver, kw)])
 
     print(tabulate(tab, headers=['Solver', 'Objective', 'Error', 'Time(s)', 'Iter', 'Sparsity']))
