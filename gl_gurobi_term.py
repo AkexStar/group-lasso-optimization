@@ -38,7 +38,7 @@ def solver_gurobi_term(x0, A, b, mu, opts=[]):
         model.addConstr(gp.quicksum([x[j * n + i] * x[j * n + i] for j in range(l)]) <= t[i] * t[i])
     t4 = time.time_ns()
     # print(t2 - t1, t3 - t2, t4 - t3)
-    with utils.capture_output() as outs:
+    with utils.capture_output('solver_gurobi_term_') as outs:
         model.optimize()
     # print(outs['output'])
     iters = utils.parse_iters(outs['output'])
