@@ -1,34 +1,63 @@
-import contextlib
 import sys
 import os
 import re
-from datetime import datetime
+import time
+import logging
 
-'''
-This is for recording iteration counts and objective values in shared libraries like gurobi and mosek
-以下用于把程序的输出保存到文件，而不是打印到控制台
-'''
-@contextlib.contextmanager
-def capture_output(name: str = 'solver_'):
-    fd = sys.stdout.fileno()
-    def _redir_stdout(to):
-        sys.stdout.close()
-        os.dup2(to.fileno(), fd)
-        sys.stdout = os.fdopen(fd, 'w')
-    ret = {}  
-    with os.fdopen(os.dup(fd), 'w') as old_stdout:
-        if not os.path.exists('/Users/alex/Documents/code/group-lasso-optimization/logs/'):
-            os.makedirs('/Users/alex/Documents/code/group-lasso-optimization/logs/')
-        if os.path.exists('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt'):
-            os.remove('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt')
-        with open('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt', 'w') as f:
-            _redir_stdout(f)
-        try:
-            yield ret
-        finally:
-            _redir_stdout(old_stdout)
-            with open('/Users/alex/Documents/code/group-lasso-optimization/logs/'+name+'output.txt') as f:
-                ret['output'] = f.read()
+def setLoggerLevel(logger, level: str):
+    """设置日志级别
+    Args:
+        - _level (str): 日志级别，可选值为DEBUG, INFO, WARNING, ERROR, CRITICAL，默认为INFO
+    """
+    numeric_level = getattr(logging, level.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('输入不正确的日志级别: %s' % level)
+    logger.setLevel(numeric_level)
+    logger.info(f"日志级别设置为{level.upper()}")
+
+def loggerInit(name: str = None):
+    # 使用一个名字为ATC-CDG的logger
+    logger = logging.getLogger(name)
+    # 设置logger的level为INFO
+    setLoggerLevel(logger, 'INFO')
+
+    # 创建一个输出日志到控制台的StreamHandler
+    hdr = logging.StreamHandler()
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    hdr.setFormatter(formatter)
+    # 给logger添加上handler
+    logger.addHandler(hdr)
+
+    # 同时写入日志文件
+    current_work_dir = os.path.dirname(__file__)
+    if not os.path.exists(current_work_dir+'/logs'):
+        os.makedirs(current_work_dir+'/logs')
+    now = time.strftime("%m%d-%H%M%S",time.localtime(time.time()))
+    loggerName = current_work_dir+f'/logs/{name}-{now}.log'
+    logging.basicConfig(filename = loggerName,
+                        level = logging.INFO,
+                        encoding='utf-8',
+                        format = '[%(asctime)s] %(filename)s: %(funcName)s: %(levelname)s: %(message)s')
+    logger.info(f"日志文件保存在: {current_work_dir}\logs\{name}-{now}.log")
+    return logger, loggerName
+
+logger, loggerName = loggerInit('utils')
+
+# # 重定向stdout
+# class RedirectStdStreams(object):
+#     def __init__(self, stdout=None, stderr=None):
+#         self._stdout = stdout or sys.stdout
+#         self._stderr = stderr or sys.stderr
+
+#     def __enter__(self):
+#         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+#         self.old_stdout.flush(); self.old_stderr.flush()
+#         sys.stdout, sys.stderr = self._stdout, self._stderr
+
+#     def __exit__(self, exc_type, exc_value, traceback):
+#         self._stdout.flush(); self._stderr.flush()
+#         sys.stdout = self.old_stdout
+#         sys.stderr = self.old_stderr
 
 re_iterc_default = re.compile(r'^ *(?P<iterc>\d{1,3})\:? +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE)
 

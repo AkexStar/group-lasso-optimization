@@ -1,29 +1,43 @@
 import cvxpy as cp
 import numpy as np
 import utils
+from utils import logger, loggerName
 
 def solver_cvx(x0, A, b, mu, solver, opts={}):
+    outs = {}
     m, n = A.shape
     l = b.shape[1]
-    
     X = cp.Variable((n, l))
     X.value = x0
     objective = cp.Minimize(0.5 * cp.square(cp.norm(A @ X - b, 'fro')) + mu * cp.sum(cp.norm(X, 2, 1)))
     prob = cp.Problem(objective)
-    # result = prob.solve(solver=solver, verbose=True)
-    # print(result)
-    with utils.capture_output('solver_cvx_') as outs:
-        prob.solve(solver=solver, verbose=True)
+    logger.info(f"Solver: {solver}")
+    # with open('./logs/gl_cvx.txt', "w", encoding='utf-8') as devlog, utils.RedirectStdStreams(stdout=devlog, stderr=devlog):
+        # prob.solve(solver=solver, verbose=True)
+    # with utils.capture_output('solver_cvx_') as outs:
+    # with open('./logs/gl_cvx.txt', "w", encoding='utf-8') as devlog:
+    #     with contextlib.redirect_stdout(devlog):
+    #         result = prob.solve(solver=solver, verbose=True)
+    prob.solve(solver=solver, verbose=True)
+    with open('./logs/gl_cvx.txt', encoding='utf-8') as f:
+        outs['output'] = f.read()
+    # with contextlib.redirect_stdout(io.StringIO()) as f:
+        # prob.solve(solver=solver, verbose=True) 
     iters = utils.parse_iters(outs['output'], solver)
-    print('output:', outs['output'])
-    print('CVXPY status: %s' % prob.status)
-    print('Solver stats: %s' % prob.solver_stats)
+    logger.info(f"iters: {iters}")
+    print(f"iters: {iters}")
+    logger.info(f"Time: {prob.solver_stats.solve_time}")
+    logger.info(f"Objective: {prob.value}")
+    logger.info(f"output:\n {outs['output']}")
+    logger.info(f"CVXPY status: %s" % prob.status)
+    logger.info(f"Solver stats: %s" % prob.solver_stats)
     return prob.value, X.value, len(iters), {'iters': iters}
 
 solvers = {'cvx(%s)' % solver: lambda *args, solver=solver: solver_cvx(*args, solver)
             # for solver in ['GUROBI', 'MOSEK', 'CVXOPT']}
             # for solver in ['GUROBI']}
-            for solver in ['MOSEK']}
+            for solver in ['GUROBI', 'MOSEK']}
+            # for solver in ['MOSEK']}
             # for solver in ['CVXOPT']}
 
 def solver_cvx_gurobi(x0, A, b, mu, opts):
