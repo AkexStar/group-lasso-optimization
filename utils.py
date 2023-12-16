@@ -63,7 +63,8 @@ re_iterc_default = re.compile(r'^ *(?P<iterc>\d{1,3})\:? +(?P<objv>[0-9\.eE\+\-]
 
 reg_solver = {
     'GUROBI': re_iterc_default,
-    'MOSEK': re.compile(r'^ *(?P<iterc>\d{1,3})\:?( +(?:[0-9\.eE\+\-]+)){4} +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE),   # skip four columns
+    'MOSEK': re.compile(r'^ *([\s\S]{26})\:( +)(?P<iterc>\d{1,2}) ([\s\S]{38})( +)(?P<objv>[\-\+0-9\.eE]+)', re.MULTILINE), 
+    # 'MOSEK': re.compile(r'^ *[\s\S]{27} +(?P<iterc>\d{1,3})\:?( +(?:[0-9\.eE\+\-]+)){37} +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE),   # skip four columns
     'CVXOPT': re_iterc_default,
 }
 
