@@ -66,9 +66,15 @@ reg_solver = {
     # ([\s\S]{26})\:( +)(\d{1,2}) ([\s\S]{38})( +)([\-\+0-9\.eE]+)
     # 正则表达式赛高
     'MOSEK': re.compile(r'^ *([\s\S]{26})\:( +)(?P<iterc>\d{1,2}) ([\s\S]{38})( +)(?P<objv>[\-\+0-9\.eE]+)', re.MULTILINE), 
-    # 'MOSEK': re.compile(r'^ *[\s\S]{27} +(?P<iterc>\d{1,3})\:?( +(?:[0-9\.eE\+\-]+)){37} +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE),   # skip four columns
+    'MOSEK_OLD': re.compile(r'^ *(?P<iterc>\d{1,3})\:?( +(?:[0-9\.eE\+\-]+)){4} +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE),   # skip four columns
     'CVXOPT': re_iterc_default,
 }
+
+def cleanUpLog():
+    with open(r'./logs/gl_cvx.log','w+',encoding='utf-8') as test:
+        test.truncate(0)
+        for line in test.readlines():
+            line.replace(r'\0', '')
 
 def parse_iters(s, solver=None):
     re_iterc = reg_solver[solver] if solver in reg_solver else re_iterc_default

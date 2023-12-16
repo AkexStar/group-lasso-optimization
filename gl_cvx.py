@@ -17,7 +17,6 @@ def solver_cvx(x0, A, b, mu, solver, opts={}):
         outs['output'] = f.read()
     iters = utils.parse_iters(outs['output'], solver)
     logger.info(f"iters: {iters}")
-    print(f"iters: {iters}")
     logger.info(f"Time: {prob.solver_stats.solve_time}")
     logger.info(f"Objective: {prob.value}")
     logger.info(f"output:\n {outs['output']}")
