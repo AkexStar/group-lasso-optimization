@@ -12,17 +12,9 @@ def solver_cvx(x0, A, b, mu, solver, opts={}):
     objective = cp.Minimize(0.5 * cp.square(cp.norm(A @ X - b, 'fro')) + mu * cp.sum(cp.norm(X, 2, 1)))
     prob = cp.Problem(objective)
     logger.info(f"Solver: {solver}")
-    # with open('./logs/gl_cvx.txt', "w", encoding='utf-8') as devlog, utils.RedirectStdStreams(stdout=devlog, stderr=devlog):
-        # prob.solve(solver=solver, verbose=True)
-    # with utils.capture_output('solver_cvx_') as outs:
-    # with open('./logs/gl_cvx.txt', "w", encoding='utf-8') as devlog:
-    #     with contextlib.redirect_stdout(devlog):
-    #         result = prob.solve(solver=solver, verbose=True)
     prob.solve(solver=solver, verbose=True)
-    with open('./logs/gl_cvx.txt', encoding='utf-8') as f:
+    with open('./logs/gl_cvx.log', encoding='utf-8') as f:
         outs['output'] = f.read()
-    # with contextlib.redirect_stdout(io.StringIO()) as f:
-        # prob.solve(solver=solver, verbose=True) 
     iters = utils.parse_iters(outs['output'], solver)
     logger.info(f"iters: {iters}")
     print(f"iters: {iters}")

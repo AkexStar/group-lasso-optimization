@@ -43,26 +43,28 @@ def loggerInit(name: str = None):
 
 logger, loggerName = loggerInit('utils')
 
-# # 重定向stdout
-# class RedirectStdStreams(object):
-#     def __init__(self, stdout=None, stderr=None):
-#         self._stdout = stdout or sys.stdout
-#         self._stderr = stderr or sys.stderr
+# 重定向stdout
+class RedirectStdStreams(object):
+    def __init__(self, stdout=None, stderr=None):
+        self._stdout = stdout or sys.stdout
+        self._stderr = stderr or sys.stderr
 
-#     def __enter__(self):
-#         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-#         self.old_stdout.flush(); self.old_stderr.flush()
-#         sys.stdout, sys.stderr = self._stdout, self._stderr
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        self.old_stdout.flush(); self.old_stderr.flush()
+        sys.stdout, sys.stderr = self._stdout, self._stderr
 
-#     def __exit__(self, exc_type, exc_value, traceback):
-#         self._stdout.flush(); self._stderr.flush()
-#         sys.stdout = self.old_stdout
-#         sys.stderr = self.old_stderr
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._stdout.flush(); self._stderr.flush()
+        sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
 
 re_iterc_default = re.compile(r'^ *(?P<iterc>\d{1,3})\:? +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE)
 
 reg_solver = {
     'GUROBI': re_iterc_default,
+    # ([\s\S]{26})\:( +)(\d{1,2}) ([\s\S]{38})( +)([\-\+0-9\.eE]+)
+    # 正则表达式赛高
     'MOSEK': re.compile(r'^ *([\s\S]{26})\:( +)(?P<iterc>\d{1,2}) ([\s\S]{38})( +)(?P<objv>[\-\+0-9\.eE]+)', re.MULTILINE), 
     # 'MOSEK': re.compile(r'^ *[\s\S]{27} +(?P<iterc>\d{1,3})\:?( +(?:[0-9\.eE\+\-]+)){37} +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE),   # skip four columns
     'CVXOPT': re_iterc_default,

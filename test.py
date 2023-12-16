@@ -15,10 +15,10 @@ def test_solver(solver, kw):
     time_elapsed = (toc - tic) * 10**(-9)
     err = np.linalg.norm(u - x) / np.linalg.norm(u)
     sparsity = np.sum(np.abs(x) > 1e-5) / x.size
-    logger.info('Time:', time_elapsed)
-    logger.info('Objective:', obj)
-    logger.info('Error:', err)
-    logger.info('Sparsity:', sparsity)
+    logger.info(f'Time: {time_elapsed}')
+    logger.info(f'Objective: {obj}')
+    logger.info(f'Error: {err}')
+    logger.info(f'Sparsity: {sparsity}')
     if 'iters' in out and plot_curve:
         x, y = zip(*out['iters'])
         plt.plot(x, y, '*-', label=kw)
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     import sys
     import importlib
     solvers = {}
-    with open('./logs/gl_cvx.txt', "w", encoding='utf-8') as devlog, utils.RedirectStdStreams(stdout=devlog, stderr=devlog):
+    with open('./logs/gl_cvx.log', "w", encoding='utf-8') as devlog, utils.RedirectStdStreams(stdout=devlog, stderr=devlog):
         for name in sys.argv[1:]:
             solvers = {**solvers, **importlib.import_module(name).solvers}
         tab = []
