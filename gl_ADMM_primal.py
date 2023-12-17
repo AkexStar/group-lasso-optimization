@@ -1,5 +1,5 @@
 import numpy as np
-from utils import stoprange
+from utils import stopRange
 
 MAX_ITER = 9999
 th_converge = 1e-3
@@ -30,7 +30,7 @@ def solver_ADMM_primal(x0, A, b, mu, opts={}):
     ATA = A.T @ A
     ATb = A.T @ b
 
-    for it, report_convergence in stoprange(MAX_ITER, 8):
+    for it, report_convergence in stopRange(MAX_ITER, 8):
         if linearize_x:
             x = x - eta * (ATA @ x - ATb + z + t * (x - y))
         else:

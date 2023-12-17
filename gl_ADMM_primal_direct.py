@@ -1,5 +1,5 @@
 import numpy as np
-from utils import stoprange
+from utils import stopRange
 
 MAX_ITER = 999
 th_converge = 1e-3
@@ -25,7 +25,7 @@ def solver_ADMM_primal_direct(x0, A, b, mu, opts={}):
     inv = np.linalg.inv(t * np.eye(n) + A.T @ A)
     ATb = A.T @ b
 
-    for it, report_convergence in stoprange(MAX_ITER, 8):
+    for it, report_convergence in stopRange(MAX_ITER, 8):
         x = inv @ (t * y + ATb - z)
         y0 = y
         y = prox(x + z / t, mu / t)

@@ -1,5 +1,5 @@
 import numpy as np
-from utils import stoprange
+from utils import stopRange
 
 MAX_ITER = 9999
 th_converge = 1e-3
@@ -31,7 +31,7 @@ def solver_ADMM_dual(x0, A, b, mu, opts={}):
     inv = np.linalg.inv(np.eye(m) + t * A @ A.T)
     v = np.zeros((n, l))
 
-    for it, report_convergence in stoprange(MAX_ITER, 1):
+    for it, report_convergence in stopRange(MAX_ITER, 1):
         z = inv @ (t * A @ v - A @ la - b)
         v0 = v
         v = project(A.T @ z + la / t, mu)
