@@ -8,17 +8,17 @@ import matplotlib.pyplot as plt
 plot_curve = True
 
 def test_solver(solver, kw):
-    from group_lasso_data import n, m, l, x0, A, b, mu, u
+    x0, A, b, mu, u = utils.testData()
     tic = time.time_ns()
     [obj, x, it, out] = solver(x0.copy(), A, b, mu)
     toc = time.time_ns()
     time_elapsed = (toc - tic) * 10**(-9)
     err = np.linalg.norm(u - x) / np.linalg.norm(u)
     sparsity = np.sum(np.abs(x) > 1e-5) / x.size
-    logger.info(f'Time: {time_elapsed}')
-    logger.info(f'Objective: {obj}')
-    logger.info(f'Error: {err}')
-    logger.info(f'Sparsity: {sparsity}')
+    # logger.info(f'Time: {time_elapsed}')
+    # logger.info(f'Objective: {obj}')
+    # logger.info(f'Error: {err}')
+    # logger.info(f'Sparsity: {sparsity}')
     if 'iters' in out and plot_curve:
         logger.info(f"iters: {out['iters']}")
         x, y = zip(*out['iters'])
