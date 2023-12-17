@@ -3,6 +3,7 @@ import os
 import re
 import time
 import logging
+import numpy as np
 
 def setLoggerLevel(logger, level: str):
     """设置日志级别
@@ -64,7 +65,7 @@ re_iterc_default = re.compile(r'^ *(?P<iterc>\d{1,3})\:? +(?P<objv>[0-9\.eE\+\-]
 reg_solver = {
     'GUROBI': re_iterc_default,
     # ([\s\S]{26})\:( +)(\d{1,2}) ([\s\S]{38})( +)([\-\+0-9\.eE]+)
-    # 正则表达式赛高
+    # 正则表达式赛高 排除前26个字符，匹配冒号，匹配空格，匹配1-2个数字，排除前38个字符，匹配空格，匹配数字，匹配小数点，匹配e，匹配E，匹配+，匹配-，匹配数字
     'MOSEK': re.compile(r'^ *([\s\S]{26})\:( +)(?P<iterc>\d{1,2}) ([\s\S]{38})( +)(?P<objv>[\-\+0-9\.eE]+)', re.MULTILINE), 
     'MOSEK_OLD': re.compile(r'^ *(?P<iterc>\d{1,3})\:?( +(?:[0-9\.eE\+\-]+)){4} +(?P<objv>[0-9\.eE\+\-]+)', re.MULTILINE),   # skip four columns
     'CVXOPT': re_iterc_default,
@@ -87,7 +88,7 @@ def parse_iters(s, solver=None):
 def provide(solver, **opts):
     return lambda *args: solver(*args, opts=opts)
 
-def stoprange(max_iter, converge_count):
+def stopRange(max_iter, converge_count):
     c = 0
     def converge_info(is_converge):
         nonlocal c
@@ -97,3 +98,39 @@ def stoprange(max_iter, converge_count):
     for i in range(max_iter):
         yield i, converge_info
         if c >= converge_count: break
+
+def sparsity(x):
+    # return np.sum(np.abs(x) > 1e-5) / x.size
+    return np.sum(x <= 1e-5) / np.sum(np.ones_like(x))
+
+def errFun(x, x0):
+    # return np.linalg.norm(x - u, ord='fro')
+    # return np.linalg.norm(u - x, 'fro') / np.linalg.norm(u)
+    return np.linalg.norm(x - x0, 'fro') / (1 + np.linalg.norm(x0, 'fro'))
+
+def testData(**opts):
+    if "seed" in opts:
+        seed = opts["seed"]
+    else:
+        seed: int = 97108120 # seed = ord("a") ord("l") ord("x")
+    if "mu" in opts:
+        mu = opts["mu"]
+    else:
+        mu = 1e-2
+    np.random.seed(seed)
+    n = 512
+    m = 256
+    A = np.random.randn(m, n)
+    k = round(n * 0.1)
+    l = 2
+    p = np.random.permutation(n)[:k]
+    u = np.zeros((n, l))
+    u[p, :] = np.random.randn(k, l)
+    b = A @ u
+    # x0 = np.random.rand(n, l)
+    # x0 = u + np.random.rand(n, l) * 0.001
+    # x0 = np.zeros((n, l))
+    x0 = np.random.randn(n, l)
+    f_u = 0.5 * np.linalg.norm(A @ u - b, ord='fro') ** 2 + mu * np.sum(np.linalg.norm(u, ord=2, axis=1))
+    sparsity_u = sparsity(u)
+    return x0, A, b, mu, u, f_u, sparsity_u
