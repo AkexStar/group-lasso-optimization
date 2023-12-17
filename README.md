@@ -1,5 +1,30 @@
 # Group-LASSO-problem 作业
 
+使用以下命令运行测试脚本
+
+```bash
+python Test_group_lasso.py -S all
+```
+
+可以使用 `python Test_group_lasso.py -h` 查看帮助信息：
+- `--solver` `-S` 可以指定某个求解器，默认为 `['gl_cvx_gurobi', 'gl_cvx_mosek']` 这两个求解器，也可以指定 `all` 运行所有求解器。
+- `-mu` 可以指定 `mu` 的值，默认为 `1e-2`。
+- `-seed` `-RS` 可以指定随机种子，默认为 `97108120`。
+- `--plot` `-P` 可以指定是否绘制图像，默认为 `True`。
+
+## 求解器函数说明
+
+在本项目中，每个求解器的脚本名与函数名相同，脚本名称均为 `gl_*.py` 格式，函数名称均为 `gl_*()` 格式。一个样例函数接口形式如下：
+
+```python
+[x, iter, out] = gl_cvx_mosek(x0, A, b, mu, opts)
+```
+输入分别为给定的初始解 `x0` ，而 `A` 、 `b` 、 `mu` 是给定的数据。
+输出 `x` 为算法求解出的解，`iter` 为输出为 `x` 时所对应的算法迭代次数。 `out` 为算法输出的其他信息，是一个字典结构，包含以下内容：
+- `out['status']` 为算法求解状态，可以为 `optimal` 、 `infeasible` 、 `unbounded` 、 `other` 。
+- `out['obj']` 为算法求解出的目标函数值。
+- `out['iters']` 为算法每一步迭代的目标函数值与迭代号的组合列表。
+
 ## 软件环境版本
 
 | **Name** | **Version** |
@@ -12,7 +37,7 @@
 |     Mosek     |      10.1.21      |
 |   matplotlib   |       3.8.2       |
 |     numpy     |      1.26.2      |
-|    tabulate    |      0.9.0      |
+|    tabulate    |       0.9.0       |
 
 本项目使用 `conda` 管理环境，使用 `conda create -n glp python=3.9` 创建环境，使用 `conda activate glp` 激活环境，使用 `conda deactivate` 退出环境。
 
@@ -34,5 +59,3 @@
 - 感谢 @gzz2000 公开的代码样例，本项目部分函数的实现参考了其内容。
 - 感谢 @zhangzhao2022 提供的支持，本项目的部分函数实现受到其帮助。
 - 感谢 @cvxgrp 提供的 CVXPY 优化库，本项目使用了其提供的接口。
-
-
