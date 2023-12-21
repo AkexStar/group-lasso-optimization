@@ -15,8 +15,8 @@ if __name__ == '__main__':
 
     if len(args.solvers) == 1 and str.lower(args.solvers[0]) == 'all':
         args.solvers = [
-            # 'gl_cvx_gurobi',
-            # 'gl_cvx_mosek',
+            'gl_cvx_gurobi',
+            'gl_cvx_mosek',
             'gl_gurobi', 
             # 'gl_ADMM_dual',
             # 'gl_ADMM_primal_direct', 
@@ -61,9 +61,9 @@ if __name__ == '__main__':
                 utils.logger.error(f"记录迭代次数为0，跳过该求解器")
                 continue
             x, y = zip(*iters)
-            if y[0]<0: # 使用mosek求解时，会出现y[0]为负数的情况，这里将其去除
-                x = x[1:]
-                y = y[1:]
+            # if y[0]<0: # 使用mosek求解时，会出现y[0]为负数的情况，这里将其去除
+            #     x = x[1:]
+            #     y = y[1:]
             if args.plot:
                 plt.plot(x, y, '*-', label=(solver_name[3:] + " in " + str(iters_N) + " iters"))
                 utils.logger.info(f"Plot curve for {solver_name}")

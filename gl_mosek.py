@@ -5,8 +5,7 @@ import sys
 import utils
 from utils import logger
 
-def solver_mosek(x0, A, b, mu, opts={}):
-    print('Note: for mosek, x0 is ignored')
+def gl_mosek(x0, A, b, mu, opts={}):
     m, n = A.shape
     l = b.shape[1]
     # 模型名称为grouplasso
@@ -34,5 +33,3 @@ def solver_mosek(x0, A, b, mu, opts={}):
         logger.info(f"output: {outs['output']}")
         logger.info(f"iters: {iters}")
         return M.primalObjValue(), X.level().reshape([n, l]), len(iters), {'iters': iters}
-
-solvers = {'mosek_SOCP': solver_mosek}
