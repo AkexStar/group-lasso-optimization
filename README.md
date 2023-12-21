@@ -1,3 +1,21 @@
+## <div align=center>此项目已归档!<br>仅保留仓库作为历史记录<br>相关内容移至：[Algorithms-group-LASSO-problem](https://github.com/AkexStar/Algorithms-group-LASSO-problem)<br></div>
+
+**项目致谢：**
+- 感谢 @wenzw 老师提供的课程资料，本项目的部分函数实现参考了其内容。
+- 感谢 @gzz2000 公开的代码样例，本项目部分函数的实现参考了其内容。
+- 感谢 @zhangzhao2022 提供的支持，本项目的部分函数实现受到其帮助。
+- 感谢 @cvxgrp 提供的 CVXPY 优化库，本项目使用了其提供的接口。
+
+---
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## <div align=center>以下为2023-12-17归档的历史README：</div>
+
 # Group-LASSO-problem 作业
 
 使用以下命令运行测试脚本
@@ -5,7 +23,6 @@
 ```bash
 python Test_group_lasso.py -S all
 ```
-
 可以使用 `python Test_group_lasso.py -h` 查看帮助信息：
 - `--solver` `-S` 可以指定某个求解器，默认为 `['gl_cvx_gurobi', 'gl_cvx_mosek']` 这两个求解器，也可以指定 `all` 运行所有求解器。
 - `-mu` 可以指定 `mu` 的值，默认为 `1e-2`。
@@ -53,9 +70,4 @@ python Test_group_lasso.py -S all
 - [[6] python 正则表达式说明文档](https://docs.python.org/3/library/re.html)
 - [[7] matplotlib 说明文档](https://matplotlib.org/stable/contents.html)
 
-## 项目致谢
 
-- 感谢 @wenzw 老师提供的课程资料，本项目的部分函数实现参考了其内容。
-- 感谢 @gzz2000 公开的代码样例，本项目部分函数的实现参考了其内容。
-- 感谢 @zhangzhao2022 提供的支持，本项目的部分函数实现受到其帮助。
-- 感谢 @cvxgrp 提供的 CVXPY 优化库，本项目使用了其提供的接口。
